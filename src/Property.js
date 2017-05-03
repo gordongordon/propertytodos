@@ -49,6 +49,7 @@ export class Property{
             createdAt: this.createdAt
         }
     }
+
     static deserialize(json: Object){
         const property = new Property()
         property.id = json['id'] || nextId()
@@ -59,6 +60,7 @@ export class Property{
         property.type = json['type'] || ''
         property.isAgent = json['isAgent'] || false
         property.createdAt = json['createdAt'] || 0
+        console.log( 'deserialize property.id ', property.id )
         return property
     }
 }

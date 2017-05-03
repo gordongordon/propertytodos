@@ -24,17 +24,9 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 // create a viewModel singleton
 const model = new PropertyViewModel()
 
-var PropertyViewWrapper = React.createClass({
-  render: function () {
-    return (
-        <PropertyView  model={model} />
-    );
-  }
-});
-
 // render the editor
 render(
-    <PropertyViewWrapper/>
+  <PropertyView  model={model} />
   , document.getElementById('root')
 )
 
