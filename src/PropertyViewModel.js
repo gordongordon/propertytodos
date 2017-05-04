@@ -38,8 +38,10 @@ export class PropertyViewModel{
         //
 
 
+        // Listening peer, if any property has been assigned pull(null)
+        // remove property from Properties
          this.gun.get('gordon').map().on((property, ID) => {
-           if(!property){
+           if(property === null){
              console.log(' syn with null')
              console.log(' propertys.length ', this.propertys.length );
              this.propertys = this.propertys.filter( (item) => {
@@ -51,11 +53,10 @@ export class PropertyViewModel{
                }
              })
              console.log(' propertys.length ', this.propertys.length );
-
             }
              return;
-
         });
+
     }
 
     @action
@@ -96,6 +97,13 @@ export class PropertyViewModel{
 
         this.propertys.push(newProperty)
         console.log('propertys.length', this.propertys.length)
+
+        this.registerGunOn( newProperty, ref._.soul);
+        console.log('add() on ', newProperty.id, ref._.soul);
+//        this.gun.get('gordon').get(newProperty.id).on((property, ID) => {
+  //        console.log('add() on ', newProperty.id, ID);
+    //    });
+
         return newProperty
     }
 
@@ -123,12 +131,64 @@ export class PropertyViewModel{
                this.propertys.splice(index, 1)
         }
 
+        /// Remove on from Gundb, wait for asnser
+//          console.log( 'ready to remove on.off')
+//          var options = {};
+//          this.gun.get('gordon').on( null, options );
+//          this.gun.get('gordon').get(property.id).on( (property, id) => {
+// \        console.log( 'options{}', options)
+
+
+        //var options = {};
+        //gun.get('something').on(callback, options);
+        //options.on.off()
+
+
       // Remove gun object by given key 'gordon', key id
       this.gun.get('gordon').path(property.id).put(null);
       console.log( "remove() -- ");
       this.queryMultiple('gordon');
+
+
     }
 
+   @action
+   updatePropertys( property, id){
+     const that = this;
+     this.propertys.forEach( (item, index) => {
+     if ( property !== null ) {
+        if ( item.id === property.id ) {
+          item.text = property.text;
+        }
+        console.log( "updatePropertys()) id ", property.id , id)
+     } else {
+        console.log( "updatePropertys()) id == null ", id)
+      }
+     });
+   }
+
+   // Register update for every aciton of add(), loadGunDb
+   @action
+   registerGunOn( property, id){
+
+     const that = this;
+     // on update
+     if ( property !== null ) { // Catch Null
+     this.gun.get('gordon').get(property.id).on( (property, id) => {
+//         console.log('registerGunOn() id ', property.id, id);
+         that.updatePropertys( property, id);
+     });
+   } else {
+     console.log('while registerGunOn property === null');
+   }
+    //    that.propertys.forEach( (item, index) => {
+    //       if ( item.id === property.id ) {
+    //         item.text = property.text;
+    //       }
+    //       console.log( "registerGunOn() id ", property.id )
+    //    });
+    //  });
+   }
 
     @action
     loadGunDB() {
@@ -144,7 +204,14 @@ export class PropertyViewModel{
            console.log('loadGunDB() - details', property , id, property.id)
            property.id = id;
            that.propertys.push( Property.deserialize(property) );
+
+           // on update
+           that.registerGunOn( property, id);
+
         })
+
+
+      // on Update
 
                   // gordon.map().val(  (value) => {
                   //   let items = Object.assign({}, that.items, Property.deserialize(value) );
@@ -205,19 +272,28 @@ export class PropertyViewModel{
     @action
     update( property ) {
 
-      console.log( "update() id ", property.id )
       this.gun.get('gordon').path(property.id).put(  { text : property.text } );
-      this.propertys.forEach( (item, index) => {
-         if ( item.id === property.id ) {
-           item.text = property.text;
-         }
-      });
+
+
+      // this.propertys.forEach( (item, index) => {
+      //    if ( item.id === property.id ) {
+      //      item.text = property.text;
+      //    }
+      //    console.log( "update() id ", property.id )
+      // });
+
+/// On Update:
+      //  this.gun.get('gordon').path(property.id).on((property, ID) => {
+      //    console.log('update() on ', property.id, ID);
+      //  });
+       return;
 
       // this.propertys = this.propertys.map( (item) => {
       //   if ( item.id === property.id ) {
       //     item.text = property.text;
       //   }
       // })
+
      }
 
 
