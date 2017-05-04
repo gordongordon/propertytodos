@@ -37,6 +37,7 @@ export class PropertyViewModel{
 
         //
 
+
          this.gun.get('gordon').map().on((property, ID) => {
            if(!property){
              console.log(' syn with null')
@@ -51,11 +52,7 @@ export class PropertyViewModel{
              })
              console.log(' propertys.length ', this.propertys.length );
 
-//             const index = this.propertys.indexOf(property)
-             //if(index > -1){
-              //this.propertys.splice(index, 1)
             }
-
              return;
 
         });
@@ -71,10 +68,32 @@ export class PropertyViewModel{
     // todo into the tods list.
     @action
     add(){
+        var that = this;
         // simple vanilla js, adding a new Todo instance to the todos.
-        const newProperty = new Property()
+        var newProperty = new Property()
 //        console.log( 'newProperty.id ', newProperty.id );
 //        newProperty.id++;
+
+        // Testing only
+        newProperty.text = 'Testing for update';
+        newProperty.location = 'location';
+        newProperty.price = '$0.0';
+        // Try to insert into database first, may delete it after that!
+        var ref  = this.gun.get('gordon').set( newProperty.serialize() );
+
+        // Reset Key Id,
+        newProperty.id = ref._.soul;
+        this.gun.get('gordon').path(newProperty.id).put(  {...newProperty} );
+
+        // this.gun.get('gordon').path(newProperty.id).map().on( (property, id) => {
+        //   console.log( 'update fire...')
+        //   that.propertys.forEach( (item, index) => {
+        //     if ( item.id === newProperty.id ) {
+        //          item.text = newProperty.text;
+        //        }
+        //     });
+        // })
+
         this.propertys.push(newProperty)
         console.log('propertys.length', this.propertys.length)
         return newProperty
@@ -99,10 +118,10 @@ export class PropertyViewModel{
     // remove and deletes the given todo
     @action
     remove(property){
-        // const index = this.propertys.indexOf(property)
-        //    if(index > -1){
-        //       this.propertys.splice(index, 1)
-        // }
+        const index = this.propertys.indexOf(property)
+            if(index > -1){
+               this.propertys.splice(index, 1)
+        }
 
       // Remove gun object by given key 'gordon', key id
       this.gun.get('gordon').path(property.id).put(null);
@@ -122,7 +141,7 @@ export class PropertyViewModel{
           if(!property)
           { console.log( "loadGunDB(): property = null"); return  }
 
-           console.log('loadGunDb', property , id)
+           console.log('loadGunDB() - details', property , id, property.id)
            property.id = id;
            that.propertys.push( Property.deserialize(property) );
         })
@@ -185,19 +204,21 @@ export class PropertyViewModel{
 
     @action
     update( property ) {
-      // are there invalid todos?
-      if( property.isValid === false ){
-          alert("Unable to save: There are invalid Propertys.")
-      }
 
-      if(window.localStorage){
-          window.localStorage.setItem(
-              "propertys",
-              JSON.stringify(
-                  property.serialize() )
-              )
-      }
-   }
+      console.log( "update() id ", property.id )
+      this.gun.get('gordon').path(property.id).put(  { text : property.text } );
+      this.propertys.forEach( (item, index) => {
+         if ( item.id === property.id ) {
+           item.text = property.text;
+         }
+      });
+
+      // this.propertys = this.propertys.map( (item) => {
+      //   if ( item.id === property.id ) {
+      //     item.text = property.text;
+      //   }
+      // })
+     }
 
 
    @action
@@ -205,19 +226,31 @@ export class PropertyViewModel{
 
      var gordon = this.gun.get('gordon');
 
-     gordon.set( property.serialize() );
-       console.log( "property.serialize()", property.serialize());
+    console.log( "saveone() before property.serialize ", property.id);
+
+     var ref =  gordon.set( property.serialize() );
+
+     // Reset Key Id,
+     property.id = ref._.soul;
+     ref =  this.gun.get('gordon').path(property.id).put(  {id : property.id, text : 'Jeff'} );
+          console.log( "ref ", ref );
+
+     console.log( "saveone() after property.serialize properyt.id", property.id);
+
+     // console.log( ".set" , gordon.set( property.serialize() )._.soul );
+     console.log( "property.serialize()", property.serialize());
+
      gordon.val( function( value ) {
-       console.log( "gordon.val", value)
+        console.log( "gordon.val", value)
      })
 
-     gordon.map().val( function( property ) {
-       // Catch Null Object, dont' push into array
-       if(!property)
-       { console.log( "SaveOne(): property = null"); return  }
-
-        console.log('SaveOne', property )
-     })
+    //  gordon.map().val( function( property ) {
+    //    // Catch Null Object, dont' push into array
+    //    if(!property)
+    //    { console.log( "SaveOne(): property = null"); return  }
+     //
+    //     console.log('SaveOne', property )
+    //  })
    }
 
     // save todos, if possible

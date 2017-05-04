@@ -47,14 +47,14 @@ export class SinglePropertyView extends React.Component{
         return <p>
                     #{property.id}
                     <input type="checkbox" checked={property.done} onChange={e => {property.done = e.target.checked}} />
-                    <input type="text" value={property.text} onChange={e => {property.text = e.target.value}} />
+                    {property.text} <input type="text" value={property.text} onChange={e => {property.text = e.target.value}} />
                     <input type="text" value={property.location} onChange={e => {property.location = e.target.value}} />
                     <input type="text" value={property.type} onChange={e => {property.type = e.target.value}} />
                     <input type="text" value={property.price} onChange={e => {property.price = e.target.value}} />
                     <br />
-                    <button onClick={() => model.remove(property)}>Edit</button>
+                    <button onClick={() => model.saveOne(property)}>Save</button>
                     <button onClick={() => model.remove(property)}>Delete</button>
-                    <button onClick={() => model.saveOne(property)}>Update</button>
+                    <button onClick={() => model.update(property)}>Update</button>
                 </p>
     }
 }

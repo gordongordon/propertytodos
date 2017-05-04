@@ -14,7 +14,7 @@ export class Property{
     // The decorator, imported from mobx library in the first line,
     // will tell that this value is observable and computed values or observer
     // will be notified and updated when it changes.
-    @observable text = ''
+    @observable text = 'none'
 
     // is the todo done?
     @observable done = false
