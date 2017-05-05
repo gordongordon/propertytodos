@@ -41,11 +41,6 @@ export class PropertyView extends React.Component{
                     <RaisedButton onClick={() => model.add()}  primary={true} style={buttonStyle} label="New" />
                     <RaisedButton onClick={() => model.load()} secondary={true} style={buttonStyle} label="Load" />
                     <RaisedButton onClick={() => model.save()} style={buttonStyle} label="Save" />
-                    <RaisedButton onClick={() => model.save()} style={buttonStyle} label="Sale" />
-                    <RaisedButton onClick={() => model.save()} style={buttonStyle} label="Buy" />
-                    <RaisedButton onClick={() => model.save()} style={buttonStyle} label="Rent" />
-                    <RaisedButton onClick={() => model.save()} style={buttonStyle} label="Lease" />
-                    <DialogAddProperty/>
                 </div>
                 <Table>
                     <TableHeader displaySelectAll={false}>

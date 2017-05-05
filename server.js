@@ -14,7 +14,7 @@ var server = http.Server();
 server.on('request', function (req, res) {
 	if(Gun.serve(req, res)){ return }
 	if (req.url === '/' || req.url === '/index.html') {
-		fs.createReadStream('build/index.html').pipe(res);
+		fs.createReadStream('/index.html').pipe(res);
 	}
 });
 

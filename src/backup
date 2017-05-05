@@ -13,6 +13,7 @@ export class PropertyViewModel{
     // it is marked as observable because also adding and removing elements
     // from the todo list should be tracked by the view and/or computed values.
     @observable propertys = new Map();
+    @observable items = {}
 
     // when the viewmodel is constructed, attempt to load the todos.
     constructor(){
@@ -22,25 +23,43 @@ export class PropertyViewModel{
            'http://127.0.0.1:8080/gun',
          ]);
 
-       this.load();
+       this.loadGunDB();
 
-//       this.propertys.forEach( (property, key) => {
-          //that.listen( key );
-          //console.log( 'key', key)
-      //  })
+
+      //   // initialize all properties' update
+      //   // Listening peer, if any property has been assigned pull(null)
+      //   // remove property from Properties
+      //    this.gun.get('gordon').map().on((property, id) => {
+      //      console.log('->Start of removing null property, with id of ', id);
+      //      if (property === null) {
+      //        var count = that.propertys.size;
+      //        console.log(' Property id is null', id)
+      //        console.log('  propertys.size is before delete', that.propertys.size );
+      //        that.propertys.delete(id);
+      //        if ( count > that.propertys.size ) {
+      //           console.log('   Propertys id has removel null', id );
+      //        } else {
+      //           console.log('   Propertys is hasn\'t been removel null', id)
+      //        }
+      //        console.log('<-End of removing null property');
+      //      return;
+      //   } else {
+      //     console.log('<-End of removing null, and Property is not null', id)
+      //   }
+      // });
+
+
+
+
     }
 
-   //
-   // wouldn't tracka when key === null, which means once. pull(null)
     @action
     listen( key ) {
        const that = this;
        this.gun.get('gordon').get( key ).on( (property, key) => {
           if ( property === null ) {
-            console.log('listen() property === null')
             that.propertys.delete( key );
           } else {
-            console.log('listen() property !== null')
             that.propertys.set( key, property ) ;
           }
        });
@@ -53,7 +72,7 @@ export class PropertyViewModel{
     add(){
 
         var newProperty = new Property()
-        const ref = this.gun.get('gordon').set( newProperty.serialize() );
+        var ref = this.gun.get('gordon').set( newProperty );
         const key = ref._.soul;
 
         this.propertys.set( key, newProperty )
@@ -68,24 +87,17 @@ export class PropertyViewModel{
     // remove and deletes the given todo
     @action
     remove( key ) {
-      this.gun.get('gordon').get(key).put(null);
-
-      // Delete menally, because when put(null) with key, listen woudn't tracker
+      this.gun.get('gordon').path(key).put(null);
       this.propertys.delete( key );
     };
 
     @action
-    load() {
+    loadGunDB() {
         var that = this;
 
         this.gun.get('gordon').map().val( (property, key) => {
           if ( property !== null ) {
-            // assign property to be monitored, update
-            that.listen( key );
             that.propertys.set( key, property );
-            console.log( 'loadGunDB() loads Property', property)
-          } else {
-            console.log( 'error shoudn\'t have null property in loadGunDb')
           }
         })
 
@@ -94,7 +106,7 @@ export class PropertyViewModel{
     @action
     update( key, property ) {
 
-      this.gun.get('gordon').path( key ).put(  { ...property } , (ack) => {
+      this.gun.get('gordon').path( key ).put(  { text : property.text } , (ack) => {
         if (ack.err) {
           console.log('update() ack.err', ack.err)
         } else {

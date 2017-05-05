@@ -20,7 +20,7 @@ export class Property{
     @observable done = false
 
     @observable price = 0;
-    @observable location = ''
+    @observable location = 'hk'
     // Type : sale, buy, rent, lease
     @observable type = null
     @observable isAgent = false

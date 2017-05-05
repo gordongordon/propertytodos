@@ -1,7 +1,6 @@
 import React from 'react'
 import {observer} from 'mobx-react'
 
-var Gun = require('gun');
 
 // This is a React component.
 // The property "model" of the passed props object is an instance of our TodoViewModel class.
@@ -12,24 +11,47 @@ var Gun = require('gun');
 @observer
 export class PropertyView extends React.Component{
 
-
-
     render(){
         const model = this.props.model
+
+        var kk = new Map();
+        var element = [];
+
+        kk.set( 123, {
+            id: 123,
+            text: 'text',
+            done: false,
+            price : 33,
+            location : 'location',
+            type: 'sale',
+            isAgent: false,
+            createdAt: 133
+        } )
+
+        function lookFor( items ) {
+          items.forEach( (property, keyID) => element.push(<SinglePropertyView keyID={keyID} model={model} property={property} />) )
+          return <div>{element}</div>
+        }
 
         // just some HTML markup based of the ViewModel data.
         return <div>
             <h1>React & MobX Property List!</h1>
             <p>
                 <button onClick={() => model.add()}>New Property</button>
-                <button onClick={() => model.loadGunDB()}>Reload Propertys</button>
+                <button onClick={() => model.load()}>Reload Propertys</button>
                 <button onClick={() => model.save()}>Save Propertys</button>
-                  <button onClick={() => model.clear()}>clear gundb</button>
-                  </p>
-                  {model.propertys.map((property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
+                <button onClick={() => model.clear()}>clear gundb</button>
+                </p>
+                {lookFor(model.propertys)}
         </div>
     }
 }
+//<h1>{kk.forEach( (property, id) => console.log('hellow') )}</h1>
+
+//{kk.forEach( (property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
+
+//{model.propertys.forEach((property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
+
 // {model.gunRef().map().val( (property, i) => <SinglePropertyView key={i} model={model} property={property} />) }
 
 //{model.propertys.map((property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
@@ -41,20 +63,24 @@ export class PropertyView extends React.Component{
 export class SinglePropertyView extends React.Component{
 
     render(){
-        const model = this.props.model
-        const property = this.props.property
+        //const model = this.props.model
+        const {property, keyID, model} = this.props;
+        //const key = this.props.key
 
-        return <p>
-                    #{property.id}
+        //console.log( 'key ', key )
+
+        return <div>
+               <p>  {keyID}
                     <input type="checkbox" checked={property.done} onChange={e => {property.done = e.target.checked}} />
                     {property.text} <input type="text" value={property.text} onChange={e => {property.text = e.target.value}} />
                     <input type="text" value={property.location} onChange={e => {property.location = e.target.value}} />
                     <input type="text" value={property.type} onChange={e => {property.type = e.target.value}} />
                     <input type="text" value={property.price} onChange={e => {property.price = e.target.value}} />
                     <br />
-                    <button onClick={() => model.saveOne(property)}>Save</button>
-                    <button onClick={() => model.remove(property)}>Delete</button>
-                    <button onClick={() => model.update(property)}>Update</button>
                 </p>
+        <button onClick={() => model.save()}>Save</button>
+        <button onClick={() => model.remove(keyID)}>Delete</button>
+        <button onClick={() => model.update(keyID, property)}>Update</button>
+        </div>
     }
 }
