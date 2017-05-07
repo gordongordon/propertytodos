@@ -1,8 +1,6 @@
 import {observable, action, map, toJS} from 'mobx'
 import {Property} from './Property'
 var Gun = require('gun');
-import moment from 'moment'
-
 
 //**
 //** Issue can't be sync with 3 objecs, by add todo
@@ -13,21 +11,18 @@ export class PropertyViewModel{
     // it is marked as observable because also adding and removing elements
     // from the todo list should be tracked by the view and/or computed values.
     @observable propertys = new Map();
+    //const userId = 'gordon'
 
     // when the viewmodel is constructed, attempt to load the todos.
     constructor(){
-       var that = this;
 
-       this.gun = Gun([
-           'http://127.0.0.1:8080/gun',
-         ]);
+      this.gun = Gun([
+            'http://127.0.0.1:8080/gun',
+      ]);
 
-       this.load();
+      this.userId = 'gordon';
 
-//       this.propertys.forEach( (property, key) => {
-          //that.listen( key );
-          //console.log( 'key', key)
-      //  })
+      this.load();
     }
 
    //
@@ -35,7 +30,7 @@ export class PropertyViewModel{
     @action
     listen( key ) {
        const that = this;
-       this.gun.get('gordon').get( key ).on( (property, key) => {
+       this.gun.get(this.userId).get( key ).on( (property, key) => {
           if ( property === null ) {
             console.log('listen() property === null')
             that.propertys.delete( key );
@@ -53,10 +48,12 @@ export class PropertyViewModel{
     add(){
 
         var newProperty = new Property()
-        const ref = this.gun.get('gordon').set( newProperty.serialize() );
+        const ref = this.gun.get(this.userId).set( newProperty.serialize() );
+        // Get new Key of newProperty
         const key = ref._.soul;
 
         this.propertys.set( key, newProperty )
+        // listen for update for every new items
         this.listen( key );
     }
 
@@ -68,7 +65,8 @@ export class PropertyViewModel{
     // remove and deletes the given todo
     @action
     remove( key ) {
-      this.gun.get('gordon').get(key).put(null);
+
+      this.gun.get(this.userId).get(key).put(null);
 
       // Delete menally, because when put(null) with key, listen woudn't tracker
       this.propertys.delete( key );
@@ -78,12 +76,12 @@ export class PropertyViewModel{
     load() {
         var that = this;
 
-        this.gun.get('gordon').map().val( (property, key) => {
+        this.gun.get(this.userId).map().val( (property, key) => {
           if ( property !== null ) {
             // assign property to be monitored, update
             that.listen( key );
             that.propertys.set( key, property );
-            console.log( 'loadGunDB() loads Property', property)
+            console.log( 'load() loads Property', property)
           } else {
             console.log( 'error shoudn\'t have null property in loadGunDb')
           }
@@ -94,7 +92,7 @@ export class PropertyViewModel{
     @action
     update( key, property ) {
 
-      this.gun.get('gordon').path( key ).put(  { ...property } , (ack) => {
+      this.gun.get(this.userId).path( key ).put(  { ...property } , (ack) => {
         if (ack.err) {
           console.log('update() ack.err', ack.err)
         } else {
@@ -105,40 +103,14 @@ export class PropertyViewModel{
      }
 
     // save todos, if possible
+    // don't know if we still need it!
     @action
     save(){
+        const that = this;
 
-        var that = this;
-        // **** Keeep it ***
-        // are there invalid todos?
-        // if(this.propertys.filter(property => property.isValid === false).length > 0){
-        //     alert("Unable to save: There are invalid Propertys.")
-        // }
-
-
-//        var myArray = [{hello: 'world'}, {you: 'are'}, {so: 'wonderful'}];
-        var gordon = this.gun.get('gordon');
-
-
-
-        this.propertys.forEach(function(item){
-          that.gordon.set(gun.put(item));
-        });
-
-        gordon.map(function(item, key){ // print them back out
-          console.log("gorodn->item:", item);
-        });
-
-        // if(window.localStorage){
-        //     window.localStorage.setItem(
-        //         "propertys",
-        //         JSON.stringify(
-        //             //this.propertys.map( property => property.serialize() )
-        //             this.propertys.forEach( (property) => {
-        //                property.serialize()
-        //             })
-        //         )
-        //     )
-        // }
+        this.propertys.forEach( (property, key) => {
+           that.gun.get(that.userId).get(key).pull( property );
+        })
     }
+
 }

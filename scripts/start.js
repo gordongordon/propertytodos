@@ -154,6 +154,7 @@ function openBrowser(port) {
       // Ignore errors.
     }
   }
+
   // Fallback to opn
   // (It will always open new tab)
   opn('http://localhost:' + port + '/');
@@ -208,6 +209,7 @@ function addMiddleware(devServer) {
 }
 
 function runDevServer(port) {
+
   var devServer = new WebpackDevServer(compiler, {
     // Enable hot reloading server. It will provide /sockjs-node/ endpoint
     // for the WebpackDevServer client so it can learn when the files were

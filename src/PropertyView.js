@@ -46,15 +46,6 @@ export class PropertyView extends React.Component{
         </div>
     }
 }
-//<h1>{kk.forEach( (property, id) => console.log('hellow') )}</h1>
-
-//{kk.forEach( (property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
-
-//{model.propertys.forEach((property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
-
-// {model.gunRef().map().val( (property, i) => <SinglePropertyView key={i} model={model} property={property} />) }
-
-//{model.propertys.map((property, i) => <SinglePropertyView key={property.id} model={model} property={property} />)}
 
 // Since putting observer only on the TodoView will result in re-rendering all the todos
 // any time a single todo is updated, we create a subcomponent that handles the editing for a single todo
@@ -70,13 +61,14 @@ export class SinglePropertyView extends React.Component{
         //console.log( 'key ', key )
 
         return <div>
-               <p>  {keyID}
+               <p>
                     <input type="checkbox" checked={property.done} onChange={e => {property.done = e.target.checked}} />
                     {property.text} <input type="text" value={property.text} onChange={e => {property.text = e.target.value}} />
                     <input type="text" value={property.location} onChange={e => {property.location = e.target.value}} />
                     <input type="text" value={property.type} onChange={e => {property.type = e.target.value}} />
                     <input type="text" value={property.price} onChange={e => {property.price = e.target.value}} />
                     <br />
+                    {keyID}
                 </p>
         <button onClick={() => model.save()}>Save</button>
         <button onClick={() => model.remove(keyID)}>Delete</button>
