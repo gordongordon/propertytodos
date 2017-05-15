@@ -1,0 +1,44 @@
+localStorage.clear();
+// Read https://github.com/amark/gun/wiki/Graphs
+
+var gun = Gun();
+
+var pa = {name: 'double cove', location : 'shatin'}
+var pb = {name: 'cityone', location : 'maonshan'}
+var pc = {name: 'garden river', location : 'taiwai'}
+var pd = {name: 'the one', location : 'wu ka sha'}
+var pe = {name: 'the Two', location : 'kown'}
+
+
+p1 = gun.get('building/'+pa.name).put(pa)
+p2 = gun.get('building/'+pb.name).put(pb)
+p3 = gun.get('building/'+pc.name).put(pc)
+p4 = gun.get('building/'+pd.name).put(pd)
+p5 = gun.get('building/'+pe.name).put(pe)
+
+p1.path(pa.location).put(p1)
+
+var alice = gun.get('person/alice').put({name: 'alice', age: 22});
+var bob = gun.get('person/bob').put({name: 'bob', age: 24});
+var carl = gun.get('person/carl').put({name: 'carl', age: 16});
+var dave = gun.get('person/dave').put({name: 'dave', age: 42});
+
+var server = gun.get('server').put( { name: 'server' })
+
+
+alice.path('sell').set(p1).path('forSellBy').put(alice)
+bob.path('sell').set(p5).path('forSellBy').put(bob)
+bob.path('buy').set(p2).path('forBuyBy').put(bob)
+carl.path('lease').set(p3).path('forLeaseBy').put(carl)
+dave.path('rent').set(p4).path('forRentBy').put(dave)
+server.path('sale').set(p1)
+server.path('buy').set(p2)
+server.path('lease').set(p3)
+server.path('rent').set(p4)
+
+
+gun.get('building'+pa.name).put(null)
+
+server.path('sale').map().path('shatin').val( (p) => {
+  console.log( p )
+})
