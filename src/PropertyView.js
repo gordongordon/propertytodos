@@ -18,9 +18,9 @@ export class PropertyView extends React.Component{
 
 
 
-        function renderProperty( model ) {
+        function renderProperty( models, modelKey, model ) {
           if ( model.property !== null ) {
-             return <SinglePropertyView key={model.property.id} keyGun={model.propertyKey} model={model} property={model.property} />
+             return <SinglePropertyView models={models} modelKey={modelKey} key={model.property.id} keyGun={model.propertyKey} model={model} property={model.property} />
            }
         }
 
@@ -31,11 +31,11 @@ export class PropertyView extends React.Component{
         }
 
         // render single property model
-        function propertyBox( model, title , count) {
+        function propertyBox( models, modelKey, model, title , count) {
 
           return <div key={count}>
                  <h3>- User:[{model.user.name}] -- Property Box {title} ------------------- </h3>
-                 {renderProperty( model )}
+                 {renderProperty( models, modelKey, model )}
                  <h5>           ------ Status ------                    </h5>
                  <SinglePropertyStatusView model={model}/>
                  <h3>----------------- Matched Property --------------- </h3>
@@ -47,12 +47,12 @@ export class PropertyView extends React.Component{
         // render mutli property models
         function renderPropertyBox( models ) {
 
-          if ( models.models.length > 0 ) {
+          if ( models.models.size > 0 ) {
              var elements = []
              var count = 0;
 
-             models.models.forEach( (model) => {
-               elements.push(propertyBox( model , model.typeTo,  count++) )
+             models.models.forEach( (model, modelKey) => {
+               elements.push(propertyBox( models, modelKey, model , model.typeTo,  count++) )
              })
 
              return <div>
@@ -105,7 +105,7 @@ export class SinglePropertyView extends React.Component{
 
     render(){
         //const model = this.props.model
-        const {property, keyID, keyGun, model} = this.props;
+        const {property, keyID, keyGun, model, models, modelKey } = this.props;
         //const key = this.props.key
 
         //console.log( 'key ', key )
@@ -120,9 +120,7 @@ export class SinglePropertyView extends React.Component{
                     {keyGun}
                 </p>
                 <div>
-                <button onClick={() => model.save()}>Save</button>
-                <button onClick={() => model.removeGun(keyGun)}>Delete</button>
-                <button onClick={() => model.update(keyID, property)}>Update</button>
+                <button onClick={() => models.delete(modelKey)}>Delete</button>
                 </div>
         </div>
     }

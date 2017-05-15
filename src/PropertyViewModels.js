@@ -5,6 +5,9 @@ import {PropertyViewModel} from './PropertyViewModel'
 var Gun = require('gun');
 
 
+// for gramming gundb
+// add create obj, vs load obj which on
+
 
 //**
 //** Issue can't be sync with 3 objecs, by add todo
@@ -17,7 +20,8 @@ export class PropertyViewModels {
      //  modelRent  = new PropertyViewModel( this.gun, this.server ); // property y
 
 //     @observable users = new Map();
-     @observable models = []
+     // handle issue of On Gundb, calling mutil time
+     @observable models = new Map();
 
      constructor( userName , gun, server) {
 
@@ -45,6 +49,13 @@ export class PropertyViewModels {
     window.localStorage.clear();
 
   }
+
+   @action
+   delete( modelsKey ) {
+      var model = this.models.get( modelsKey )
+      model.removeGun( model.propertyKey )
+      this.models.delete(modelsKey)
+   }
    // loading data, while being offline, reload
    @action
    load(userName){
@@ -58,8 +69,9 @@ export class PropertyViewModels {
            //if ( (that.models.find( () => that.models.propertyKey === key )) !== undefined ) {
            var model = new PropertyViewModel( that.userName, that.gun, that.server );
            model.load( p, key );
-           that.models.push( model );
-           console.log( 'loading sell', p)
+           //that.models.push( model );
+           that.models.set( key, model )
+           console.log( 'loading sell ', p, that.models.size)
          //}
         }
         })
@@ -68,7 +80,10 @@ export class PropertyViewModels {
           //if ( (that.models.find( () => that.models.propertyKey === key )) !== undefined ) {
           var model = new PropertyViewModel( that.userName, that.gun, that.server );
           model.load( p, key );
-          that.models.push( model );
+          //that.models.push( model );
+          // my using Map handle isssue of calling mutli times
+          that.models.set( key, model )
+          console.log( 'loading buy', p, that.models.size)
         //}
         } })
      this.userGun.get('lease').map().val( (p, key) => {
@@ -76,7 +91,8 @@ export class PropertyViewModels {
           //if ( (that.models.find( () => that.models.propertyKey === key )) !== undefined ) {
            var model = new PropertyViewModel( that.userName, that.gun, that.server );
            model.load( p, key );
-           this.models.push( model );
+           //that.models.push( model );
+           that.models.set( key, model )
          //}
         } })
      this.userGun.get('rent').map().val( (p, key) => {
@@ -84,7 +100,8 @@ export class PropertyViewModels {
           //if ( (that.models.find( () => that.models.propertyKey === key )) !== undefined ) {
            var model = new PropertyViewModel( that.userName, that.gun, that.server );
            model.load( p, key );
-           that.models.push( model );
+           //that.models.push( model );
+           that.models.set( key, model )
          //}
         }})
    }

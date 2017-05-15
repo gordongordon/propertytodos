@@ -101,7 +101,9 @@ export class PropertyViewModel{
        // for use in react display model type
        this.typeTo = p.typeTo
        // storage new property into gundb
-       var propertyGun = this.gun.get( p.id)
+//       var propertyGun = this.gun.get( p.id)
+       var propertyGun = this.gun.get( key )
+
 //        var propertyGun = this.gun.get('building/' + p.name).put( p.serialize() )
        this.currentProperty = propertyGun;
 
@@ -114,7 +116,8 @@ export class PropertyViewModel{
        // Call listen for monitoring of typeFor
        this.registerForMatchList( p.typeFor )
 
-       this.propertyKey = this.currentProperty._.soul;
+//       this.propertyKey = this.currentProperty._.soul;
+       this.propertyKey = key;
        //this.propertys.set( this.currentProperty._.soul, p );
 
        // monitoring like, view, reject
@@ -187,7 +190,7 @@ export class PropertyViewModel{
        var that = this;
 
        //console.log( 'gunKey ', keyProperty)
-       this.gun.get( keyProperty ).val( (p) => {
+       this.gun.get( keyProperty ).on( (p) => {
           if ( that.currentProperty === null) {
             console.log( 'currentProperty === null', that.user.name)
           }
@@ -197,7 +200,7 @@ export class PropertyViewModel{
           var propertyRef  = that.gun.get( p.id )
 //          this.likeNew( that.currentProperty, p)
           this.likeNew( propertyRef, that.currentProperty )
-       })
+       }, true)
 
     }
 
@@ -210,14 +213,14 @@ export class PropertyViewModel{
     @action
     rejectGun( keyProperty ) {
       const that = this;
-      this.gun.get( keyProperty ).val( (p) => {
+      this.gun.get( keyProperty ).on( (p) => {
          var propertyRef = that.gun.get( p.id )
 //         this.rejectNew( that.currentProperty, p)
          this.rejectNew( propertyRef, that.currentProperty)
          this.matchedList.delete( keyProperty )
          console.log( 'call rejectGun reject', that.user.name)
 
-      })
+      }, true)
     }
     @action
     rejectNew( propertyY, propertyX ) {
@@ -242,12 +245,16 @@ export class PropertyViewModel{
       this.reject.clear()
       this.view.clear()
       this.property = null
+      this.propertyKey = null
     }
 
     @action
     matchNew( yGun, x ) {
 
-			if ( yGun._.put.location === x.location && yGun._.put.typeTo === x.typeFor) {
+
+			if (  (yGun._.put.location === x.location && yGun._.put.typeTo === x.typeFor)
+            && (yGun._.put.text !== x.text)
+         ) {
 				return true;
 			} else {
 				return false;
