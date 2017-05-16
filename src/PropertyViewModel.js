@@ -239,6 +239,9 @@ export class PropertyViewModel{
     removeGun( keyProperty ) {
       this.gun.get( keyProperty ).put(null)
       this.server.get('buy').get( keyProperty ).put(null)
+      this.server.get('sell').get( keyProperty ).put(null)
+      this.server.get('lease').get( keyProperty ).put(null)
+      this.server.get('rent').get( keyProperty ).put(null)
       this.currentProperty.get('match').get( keyProperty).put(null)
       this.matchedList.clear()
       this.like.clear()

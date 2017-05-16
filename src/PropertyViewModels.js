@@ -50,9 +50,16 @@ export class PropertyViewModels {
 
   }
 
+   // Delete locatlly
    @action
    delete( modelsKey ) {
+
       var model = this.models.get( modelsKey )
+//      this.server.get().put(null)
+      this.userGun.get('sell').get(model.propertyKey).put(null)
+      this.userGun.get('buy').get(model.propertyKey).put(null)
+      this.userGun.get('lease').get(model.propertyKey).put(null)
+      this.userGun.get('rent').get(model.propertyKey).put(null)
       model.removeGun( model.propertyKey )
       this.models.delete(modelsKey)
    }
@@ -63,6 +70,7 @@ export class PropertyViewModels {
 //     var model = new PropertyViewModel( this.userName, this.gun, this.server );
 
      //this.userGun = this.gun.get(userName)
+     // Call remotelly
      this.userGun.get('sell').map().val( (p, key) => {
         if ( p !== null ) {
            // Catch duplicate model push while create() get call, then get('sell') obj being put, and traget get('sell')
@@ -74,7 +82,10 @@ export class PropertyViewModels {
            console.log( 'loading sell ', p, that.models.size)
          //}
        } else {
+         // Need to look over it!
+         // Delete remotely
          that.models.delete( key )
+         console.log('models.delete', key)
        }
         })
      this.userGun.get('buy').map().val( (p, key) => {
@@ -87,7 +98,13 @@ export class PropertyViewModels {
           that.models.set( key, model )
           console.log( 'loading buy', p, that.models.size)
         //}
-        } })
+      } else {
+        // Need to look over it!
+        that.models.delete( key )
+        console.log('models.delete', key)
+      }
+
+       })
      this.userGun.get('lease').map().val( (p, key) => {
         if ( p !== null ) {
           //if ( (that.models.find( () => that.models.propertyKey === key )) !== undefined ) {
@@ -105,7 +122,13 @@ export class PropertyViewModels {
            //that.models.push( model );
            that.models.set( key, model )
          //}
-        }})
+       } else {
+         // Need to look over it!
+         that.models.delete( key )
+         console.log('models.delete', key)
+       }
+
+      })
    }
 
 
