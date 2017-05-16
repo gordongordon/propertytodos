@@ -73,7 +73,9 @@ export class PropertyViewModels {
            that.models.set( key, model )
            console.log( 'loading sell ', p, that.models.size)
          //}
-        }
+       } else {
+         that.models.delete( key )
+       }
         })
      this.userGun.get('buy').map().val( (p, key) => {
         if ( p !== null ) {
